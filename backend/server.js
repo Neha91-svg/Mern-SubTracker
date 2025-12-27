@@ -22,7 +22,8 @@ connectDB();
 app.use(cors({
     origin: [
         "https://mern-sub-tracker.vercel.app",   // 👈 MAIN PROD
-        "http://localhost:5173"                  // 👈 LOCAL DEV
+        "http://localhost:5173",
+        "https://mern-sub-tracker-git-main-neha91-svgs-projects.vercel.app"
     ],
     credentials: true,
 }));
