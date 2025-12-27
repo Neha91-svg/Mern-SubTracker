@@ -20,9 +20,13 @@ import cors from "cors";
 
 connectDB();
 app.use(cors({
-    origin: "*",
-    withcredentials: true,
+    origin: [
+        "https://mern-sub-tracker.vercel.app", 
+        "https://mern-sub-tracker-221ap6qbr-neha91-svgs-projects.vercel.app"
+    ],
+    credentials: true,
 }));
+
 
 app.set("trust proxy", 1);
 
