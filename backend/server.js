@@ -21,8 +21,9 @@ import cors from "cors";
 connectDB();
 app.use(cors({
     origin: [
-        "https://mern-sub-tracker.vercel.app", 
-        "https://mern-sub-tracker-221ap6qbr-neha91-svgs-projects.vercel.app"
+        "https://mern-sub-tracker.vercel.app",
+        "https://mern-sub-tracker-221ap6qbr-neha91-svgs-projects.vercel.app",
+        "https://mern-sub-tracker-git-main-neha91-svgs-projects.vercel.app"
     ],
     credentials: true,
 }));
