@@ -64,10 +64,11 @@ export const loginUser = async (req, res, next) => {
         // ✅ Set JWT in HTTP-only cookie
         res.cookie("token", generateToken(user._id), {
             httpOnly: true,
-            secure: process.env.NODE_ENV === "production", // only HTTPS in prod
-            sameSite: "strict", // prevent CSRF
-            maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
+            secure: true,              // ✅ REQUIRED on HTTPS
+            sameSite: "none",          // ✅ REQUIRED for cross-domain
+            maxAge: 1000 * 60 * 60 * 24 * 7,
         });
+
 
         // Send user info in response
         res.status(200).json({
@@ -85,6 +86,12 @@ export const loginUser = async (req, res, next) => {
 };
 export const logoutUser = async (req, res, next) => {
     try {
+        res.clearCookie("token", {
+            httpOnly: true,
+            secure: true,
+            sameSite: "none",
+        });
+
         res.status(200).json({
             success: true,
             message: "Logout successful",
@@ -93,3 +100,4 @@ export const logoutUser = async (req, res, next) => {
         next(error);
     }
 };
+
