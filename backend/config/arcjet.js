@@ -4,8 +4,13 @@ const isProd = process.env.ARCJET_ENV === "production";
 
 const aj = arcjet({
   key: process.env.ARCJET_KEY,
+
+  characteristics: ["ip"],
+
   rules: [
-    shield({ mode: isProd ? "LIVE" : "DRY_RUN" }),
+    shield({
+      mode: isProd ? "LIVE" : "DRY_RUN",
+    }),
 
     detectBot({
       mode: isProd ? "LIVE" : "DRY_RUN",

@@ -20,9 +20,10 @@ import cors from "cors";
 
 connectDB();
 app.use(cors({
-    origin: "http://localhost:5173",
+    origin: process.env.FRONTEND_URL,
     credentials: true,
 }));
+
 app.set("trust proxy", true);
 
 app.use(express.json());
@@ -37,6 +38,9 @@ app.use('/api/subscriptions', subscriptionRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/workflows', workflowRoutes);
 
+app.get("/", (req, res) => {
+    res.send("API is running");
+});
 
 // 404 handler
 app.use((req, res, next) => {
@@ -46,9 +50,6 @@ app.use((req, res, next) => {
 
 app.use(errorHandler);
 
-app.get('/', (req, res) => {
-    res.send('Hello World!');
-});
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
