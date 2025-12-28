@@ -3,22 +3,34 @@ import qstashClient from "../config/upstash.js";
 
 export const createSubscription = async (req, res, next) => {
   try {
-    const { name, price, currency, frequency, category, paymentMethod, startDate } = req.body;
+    const {
+      name,
+      price,
+      currency,
+      frequency,
+      category,
+      paymentMethod,
+      startDate,
+    } = req.body;
 
     if (!name || !price || !frequency || !startDate) {
       res.status(400);
       throw new Error("Required fields missing");
     }
 
-    // 🔹 Calculate renewalDate
     const renewalDate = new Date(startDate);
-    if (frequency === "monthly") renewalDate.setMonth(renewalDate.getMonth() + 1);
-    else if (frequency === "yearly") renewalDate.setFullYear(renewalDate.getFullYear() + 1);
 
-    // 💾 Save subscription
+    if (frequency === "monthly") {
+      renewalDate.setMonth(renewalDate.getMonth() + 1);
+    } else if (frequency === "yearly") {
+      renewalDate.setFullYear(renewalDate.getFullYear() + 1);
+    }
+
+    // 🔥 SET TIME (important)
+    renewalDate.setHours(10, 0, 0, 0); // 10 AM
+
     const subscription = await Subscription.create({
       user: req.user._id,
-      userEmail: req.user.email,
       name,
       price,
       currency,
@@ -27,18 +39,11 @@ export const createSubscription = async (req, res, next) => {
       paymentMethod,
       startDate,
       renewalDate,
-      workflowEnabled: true,
-    });
-
-    // 🔔 Trigger QStash workflow
-    await qstashClient.publishJSON({
-      url: `${process.env.BASE_URL}/api/workflows/subscription-reminder`,
-      body: { subscription },
     });
 
     res.status(201).json({
       success: true,
-      message: "Subscription created successfully and reminder scheduled",
+      message: "Subscription created successfully",
       data: subscription,
     });
   } catch (error) {
