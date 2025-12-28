@@ -1,18 +1,18 @@
 import express from "express";
-import { workflow } from "@upstash/qstash/express"; // QStash helper
 import { sendEmail } from "../utils/sendEmail.js";   // your email function
+import { workflow } from "@upstash/qstash";          // main package
 
 const router = express.Router();
 
 // QStash will call this endpoint
-router.post(
-  "/subscription-reminder-callback",
-  workflow(async (req) => {
-    try {
+router.post("/subscription-reminder-callback", async (req, res) => {
+  try {
+    // Wrap workflow manually
+    await workflow(async () => {
       const subscription = req.body.subscription;
 
       if (!subscription || !subscription.userEmail) {
-        return { success: false, message: "Subscription data missing" };
+        throw new Error("Subscription data missing");
       }
 
       // Send email
@@ -23,13 +23,13 @@ router.post(
       });
 
       console.log("Email sent to:", subscription.userEmail);
+    })();
 
-      return { success: true };
-    } catch (err) {
-      console.error("Error sending email:", err);
-      return { success: false, message: err.message };
-    }
-  })
-);
+    res.status(200).json({ success: true });
+  } catch (err) {
+    console.error("Error in workflow:", err);
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
 
 export default router;
