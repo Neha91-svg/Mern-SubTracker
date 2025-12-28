@@ -16,6 +16,10 @@ import errorHandler from './middleware/errorMiddleware.js';
 import workflowRoutes from "./routes/workflowRoutes.js";
 import cors from "cors";
 
+import { subscriptionReminderWorkflow } from "./workflows/subscriptionReminder.workflow.js";
+
+
+
 
 
 connectDB();
@@ -43,6 +47,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/subscriptions', subscriptionRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/workflows', workflowRoutes);
+app.use("/api/workflows/subscription-reminder", subscriptionReminderWorkflow);
 
 app.get("/", (req, res) => {
     res.send("API is running");

@@ -1,5 +1,6 @@
 import Subscription from "../models/Subscription.js";
 import qstashClient from "../config/upstash.js";
+import axios from "axios";
 
 export const createSubscription = async (req, res, next) => {
   try {
@@ -46,7 +47,6 @@ export const createSubscription = async (req, res, next) => {
   }
 };
 
-// ✅ Other subscription endpoints (get, update, delete, cancel)
 export const getAllSubscriptions = async (req, res, next) => {
   try {
     const subscriptions = await Subscription.find({ user: req.user._id }).sort({ renewalDate: 1 });
