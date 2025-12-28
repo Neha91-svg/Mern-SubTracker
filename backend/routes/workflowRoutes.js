@@ -1,5 +1,5 @@
 import express from "express";
-import qstashClient from "../config/qstashClient.js";
+import qstashClient from "../config/upstash.js";
 
 const router = express.Router();
 
