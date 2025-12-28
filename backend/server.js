@@ -38,11 +38,7 @@ app.use('/api/subscriptions', subscriptionRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/workflows', workflowRoutes);
 
-// ✅ WORKFLOW (single correct mount)
-app.use(
-    "/api/workflows/subscription-reminder",
-    subscriptionReminderWorkflow
-);
+
 
 app.get("/", (req, res) => {
     res.send("API is running");
