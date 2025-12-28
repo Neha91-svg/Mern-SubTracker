@@ -1,5 +1,5 @@
 import cron from "node-cron";
-import Subscription from "../models/subscriptionModel.js";
+import Subscription from "../models/Subscription.js";
 import { sendEmail } from "../utils/sendEmail.js";
 import { subscriptionReminderTemplate } from "../templates/subscriptionReminderTemplate.js";
 
