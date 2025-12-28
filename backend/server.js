@@ -10,9 +10,11 @@ import userRoutes from './routes/userRoutes.js';
 import subscriptionRoutes from './routes/subscriptionRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 import workflowRoutes from "./routes/workflowRoutes.js";
+import workflowCallback from "./routes/workflowCallback.js";
+
 import errorHandler from './middleware/errorMiddleware.js';
 
-import { subscriptionReminderWorkflow } from "./workflows/subscriptionReminder.workflow.js";
+
 
 const app = express();
 connectDB();
@@ -37,6 +39,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/subscriptions', subscriptionRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/workflows', workflowRoutes);
+app.use('/api/workflows', workflowCallback);
 
 
 
