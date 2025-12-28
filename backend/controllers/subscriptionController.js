@@ -1,9 +1,42 @@
 import Subscription from "../models/Subscription.js";
-import qstashClient from "../config/upstash.js";
 
+
+// 🔹 Create Subscription
 export const createSubscription = async (req, res, next) => {
   try {
     const {
+      name,
+      price,
+      currency = "INR",
+      frequency,
+      category = "Other",
+      paymentMethod = "card",
+      startDate,
+    } = req.body;
+
+    // ✅ Required fields check
+    if (!name || !price || !frequency || !startDate) {
+      res.status(400);
+      throw new Error("Required fields missing: name, price, frequency, startDate");
+    }
+
+    // ✅ Check if user exists in request
+    if (!req.user || !req.user._id) {
+      res.status(401);
+      throw new Error("User not authenticated");
+    }
+
+    // 🔹 Calculate renewalDate
+    const renewalDate = new Date(startDate);
+    if (frequency === "monthly") renewalDate.setMonth(renewalDate.getMonth() + 1);
+    else if (frequency === "yearly") renewalDate.setFullYear(renewalDate.getFullYear() + 1);
+
+    // 🔹 Optional: set time to 10:00 AM for consistency
+    renewalDate.setHours(10, 0, 0, 0);
+
+    // 🔹 Log before saving
+    console.log("Creating subscription with:", {
+      user: req.user._id,
       name,
       price,
       currency,
@@ -11,24 +44,10 @@ export const createSubscription = async (req, res, next) => {
       category,
       paymentMethod,
       startDate,
-    } = req.body;
+      renewalDate,
+    });
 
-    if (!name || !price || !frequency || !startDate) {
-      res.status(400);
-      throw new Error("Required fields missing");
-    }
-
-    const renewalDate = new Date(startDate);
-
-    if (frequency === "monthly") {
-      renewalDate.setMonth(renewalDate.getMonth() + 1);
-    } else if (frequency === "yearly") {
-      renewalDate.setFullYear(renewalDate.getFullYear() + 1);
-    }
-
-    // 🔥 SET TIME (important)
-    renewalDate.setHours(10, 0, 0, 0); // 10 AM
-
+    // 💾 Save to DB
     const subscription = await Subscription.create({
       user: req.user._id,
       name,
@@ -41,12 +60,16 @@ export const createSubscription = async (req, res, next) => {
       renewalDate,
     });
 
+    console.log("✅ Subscription created:", subscription);
+
     res.status(201).json({
       success: true,
       message: "Subscription created successfully",
       data: subscription,
     });
+
   } catch (error) {
+    console.error("❌ Error creating subscription:", error);
     next(error);
   }
 };
