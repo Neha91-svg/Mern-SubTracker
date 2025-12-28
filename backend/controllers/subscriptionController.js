@@ -1,6 +1,5 @@
 import Subscription from "../models/Subscription.js";
 import qstashClient from "../config/upstash.js";
-import axios from "axios";
 
 export const createSubscription = async (req, res, next) => {
   try {
