@@ -10,6 +10,9 @@ import userRoutes from './routes/userRoutes.js';
 import subscriptionRoutes from './routes/subscriptionRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 import "./cron/subscriptionReminder.cron.js";
+import reminderRoutes from './routes/reminderRoutes.js';
+import workflowRoutes from './routes/workflowRoutes.js';
+
 
 
 import errorHandler from './middleware/errorMiddleware.js';
@@ -39,10 +42,18 @@ app.use('/api/users', userRoutes);
 app.use('/api/subscriptions', subscriptionRoutes);
 app.use('/api/auth', authRoutes);
 
+// 🔹 reminder trigger API
+app.use("/api", reminderRoutes);
+
+// 🔹 workflow (QStash callback)
+app.use("/api/workflows", workflowRoutes);
 
 
 
-app.get("/", (req, res) => {
+
+
+
+app.get("/health", (req, res) => {
     res.send("API is running");
 });
 
