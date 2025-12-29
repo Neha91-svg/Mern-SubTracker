@@ -3,13 +3,13 @@ import { sendEmail } from "../utils/sendEmail.js";
 import { subscriptionReminderTemplate } from "../utils/emailTemplate.js";
 
 export const subscriptionReminderWorkflow = serve(async (context) => {
-  console.log("🔥 WORKFLOW HIT");
+  console.log("🔥 WORKFLOW HIT (INSIDE SERVE)");
   console.log("📩 Payload:", context.requestPayload);
 
   const { subscription } = context.requestPayload;
 
   if (!subscription || !subscription.userEmail) {
-    console.log("❌ Invalid payload");
+    console.log("❌ Invalid payload in workflow");
     return { success: false };
   }
 
@@ -26,10 +26,9 @@ export const subscriptionReminderWorkflow = serve(async (context) => {
     });
 
     console.log("✅ Email sent successfully");
-
     return { success: true };
   } catch (err) {
-    console.error("❌ Email failed:", err);
+    console.error("❌ Email failed inside workflow:", err);
     throw err;
   }
 });

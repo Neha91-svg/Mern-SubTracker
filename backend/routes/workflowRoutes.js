@@ -3,10 +3,9 @@ import { subscriptionReminderWorkflow } from "../workflows/subscriptionReminder.
 
 const router = express.Router();
 
-// 🔥 QStash will hit THIS route
-router.post(
-  "/subscription-reminder",
-  subscriptionReminderWorkflow
-);
+router.post("/subscription-reminder", (req, res, next) => {
+  console.log("➡️ Workflow route HIT (before serve)");
+  next();
+}, subscriptionReminderWorkflow);
 
 export default router;

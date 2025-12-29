@@ -13,11 +13,15 @@ import "./cron/subscriptionReminder.cron.js";
 import reminderRoutes from './routes/reminderRoutes.js';
 import workflowRoutes from './routes/workflowRoutes.js';
 
-
-
 import errorHandler from './middleware/errorMiddleware.js';
 
-
+/* 🔥🔥 DEBUG: ENV CHECK (VERY IMPORTANT) */
+console.log("====== ENV CHECK ======");
+console.log("QSTASH_TOKEN:", !!process.env.QSTASH_TOKEN);
+console.log("QSTASH_CURRENT_SIGNING_KEY:", !!process.env.QSTASH_CURRENT_SIGNING_KEY);
+console.log("QSTASH_NEXT_SIGNING_KEY:", !!process.env.QSTASH_NEXT_SIGNING_KEY);
+console.log("BASE_URL:", process.env.BASE_URL);
+console.log("=======================");
 
 const app = express();
 connectDB();
@@ -37,6 +41,15 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
+/* 🔥 DEBUG: REQUEST LOGGER (TEMP) */
+app.use((req, _res, next) => {
+    if (req.originalUrl.includes("/api/workflows")) {
+        console.log("➡️ Incoming WORKFLOW request:", req.method, req.originalUrl);
+        console.log("➡️ Headers:", req.headers);
+    }
+    next();
+});
+
 // routes
 app.use('/api/users', userRoutes);
 app.use('/api/subscriptions', subscriptionRoutes);
@@ -47,11 +60,6 @@ app.use("/api", reminderRoutes);
 
 // 🔹 workflow (QStash callback)
 app.use("/api/workflows", workflowRoutes);
-
-
-
-
-
 
 app.get("/health", (req, res) => {
     res.send("API is running");
@@ -67,5 +75,5 @@ app.use(errorHandler);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+    console.log(`🚀 Server is running on port ${PORT}`);
 });
