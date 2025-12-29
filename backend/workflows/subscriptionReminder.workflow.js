@@ -1,20 +1,21 @@
 import { serve } from "@upstash/workflow/express";
+import { log } from "@upstash/workflow"; // ✅ workflow-safe logging
 import { sendEmail } from "../utils/sendEmail.js";
 import { subscriptionReminderTemplate } from "../utils/emailTemplate.js";
 
 export const subscriptionReminderWorkflow = serve(async (context) => {
-  console.log("🔥 WORKFLOW HIT (INSIDE SERVE)");
-  console.log("📩 Payload:", context.requestPayload);
+  await log("🔥 WORKFLOW HIT (INSIDE SERVE)");
+  await log("📩 Payload: " + JSON.stringify(context.requestPayload));
 
   const { subscription } = context.requestPayload;
 
   if (!subscription || !subscription.userEmail) {
-    console.log("❌ Invalid payload in workflow");
+    await log("❌ Invalid payload in workflow");
     return { success: false };
   }
 
   try {
-    console.log("📧 Sending email to:", subscription.userEmail);
+    await log("📧 Sending email to " + subscription.userEmail);
 
     await sendEmail({
       to: subscription.userEmail,
@@ -25,10 +26,10 @@ export const subscriptionReminderWorkflow = serve(async (context) => {
       }),
     });
 
-    console.log("✅ Email sent successfully");
+    await log("✅ Email sent successfully");
     return { success: true };
   } catch (err) {
-    console.error("❌ Email failed inside workflow:", err);
+    await log("❌ Email failed inside workflow: " + err.message);
     throw err;
   }
 });
