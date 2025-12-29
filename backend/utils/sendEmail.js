@@ -1,21 +1,38 @@
-import { Resend } from "resend";
+import dotenv from "dotenv";
+dotenv.config(); // Load environment variables
 
-export const sendEmail = async ({ to, subject, html }) => {
-  // ✅ Initialize Resend inside the function
-  const resend = new Resend(process.env.RESEND_API_KEY);
+import nodemailer from "nodemailer";
 
-  try {
-    const response = await resend.emails.send({
-      from: "Subscription Tracker <onboarding@resend.dev>",
-      to,
-      subject,
-      html,
-    });
+// ✅ Check if credentials are loaded
+if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
+    throw new Error("❌ SMTP credentials missing at runtime");
+}
 
-    console.log("✅ Email sent successfully, ID:", response?.data?.id || "No ID returned");
-    return response;
-  } catch (error) {
-    console.error("❌ Resend email error:", error);
-    throw error;
-  }
+// ✅ Create transporter
+const transporter = nodemailer.createTransport({
+    host: "smtp.gmail.com",
+    port: 587,
+    secure: false, // true for 465, false for other ports
+    auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS,
+    },
+});
+
+// ✅ Export sendEmail function
+export const sendEmail = async ({ to, subject, text, html }) => {
+    try {
+        const info = await transporter.sendMail({
+            from: `"Subscription Tracker" <${process.env.SMTP_USER}>`,
+            to,
+            subject,
+            text,
+            html,
+        });
+
+        console.log("Email sent:", info.messageId);
+    } catch (error) {
+        console.error("Error sending email:", error);
+        throw error;
+    }
 };

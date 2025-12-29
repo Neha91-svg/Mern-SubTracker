@@ -10,7 +10,7 @@ import userRoutes from './routes/userRoutes.js';
 import subscriptionRoutes from './routes/subscriptionRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 import "./cron/subscriptionReminder.cron.js";
-import reminderRoutes from './routes/reminderRoutes.js';
+
 
 
 import errorHandler from './middleware/errorMiddleware.js';
