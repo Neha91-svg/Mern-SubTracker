@@ -1,32 +1,31 @@
-// cron/subscriptionReminder.cron.js
-
 import cron from "node-cron";
 import Subscription from "../models/Subscription.js";
 import { sendEmail } from "../utils/sendEmail.js";
 import { subscriptionReminderTemplate } from "../templates/subscriptionReminderTemplate.js";
 
-cron.schedule("*/5 * * * *", async () => {
+// Runs every day at 10:00 AM server time
+cron.schedule("0 10 * * *", async () => {
   console.log("🔔 Cron running...");
 
-  const now = new Date();
-  console.log("⏰ Current time:", now);
+  const startOfToday = new Date();
+  startOfToday.setHours(0, 0, 0, 0);
+
+  const endOfToday = new Date();
+  endOfToday.setHours(23, 59, 59, 999);
 
   const subs = await Subscription.find({
-    renewalDate: { $lte: now },
+    renewalDate: { $gte: startOfToday, $lte: endOfToday },
     status: "active",
   }).populate("user");
 
   console.log("📦 Subscriptions found:", subs.length);
 
   for (const sub of subs) {
-    if (!sub.user?.email) {
-      console.log("❌ User email missing for subscription:", sub._id);
-      continue;
-    }
+    if (!sub.user || !sub.user.email) continue;
+
+    console.log("📧 Sending email to:", sub.user.email);
 
     try {
-      console.log("📧 Sending email to:", sub.user.email);
-
       await sendEmail({
         to: sub.user.email,
         subject: `Reminder: ${sub.name} Subscription`,
@@ -38,11 +37,11 @@ cron.schedule("*/5 * * * *", async () => {
 
       console.log("✅ Email sent to:", sub.user.email);
 
-      // 🔒 Stop duplicate reminders
+      // Prevent duplicate reminders
       sub.status = "cancelled";
       await sub.save();
     } catch (err) {
-      console.error("❌ Failed to send email:", err.message);
+      console.error("❌ Failed to send email to", sub.user.email, err);
     }
   }
 });
