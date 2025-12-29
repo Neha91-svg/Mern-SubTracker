@@ -3,18 +3,19 @@ import { sendEmail } from "../utils/sendEmail.js";
 import { subscriptionReminderTemplate } from "../utils/emailTemplate.js";
 
 export const subscriptionReminderWorkflow = serve(async (context) => {
-  context.log("🔥 WORKFLOW HIT (INSIDE SERVE)");
-  context.log("📩 Payload: " + JSON.stringify(context.requestPayload));
+ 
+  console.log("🔥 WORKFLOW HIT");
+  console.log("📩 Payload: " + JSON.stringify(context.requestPayload));
 
   const { subscription } = context.requestPayload;
 
   if (!subscription || !subscription.userEmail) {
-    context.log("❌ Invalid payload in workflow");
+    console.log("❌ Invalid payload in workflow");
     return { success: false };
   }
 
   try {
-    context.log("📧 Sending email to " + subscription.userEmail);
+    console.log("📧 Sending email to " + subscription.userEmail);
 
     await sendEmail({
       to: subscription.userEmail,
@@ -25,10 +26,10 @@ export const subscriptionReminderWorkflow = serve(async (context) => {
       }),
     });
 
-    context.log("✅ Email sent successfully");
+    console.log("✅ Email sent successfully");
     return { success: true };
   } catch (err) {
-    context.log("❌ Email failed inside workflow: " + err.message);
-    throw err;
+    console.log("❌ Email failed inside workflow: " + err.message);
+    return { success: false, error: err.message };
   }
 });
